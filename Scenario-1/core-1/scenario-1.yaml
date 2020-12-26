@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ECS Infrastructure Interview Template 1
+Parameters:
+  ecstestsc1bucketname:
+    Type: String
+    Default: ecslambdapractice
+  ecstestsc1artifactkey:
+    Type: String
+    Default: lambda.py.zip
+  pFunctionAliasName:
+    Type: String
+    Default: ScenarioOne-LambdaFunctionAlias  
+  pLogLevel:
+    Type: String
+    Default: INFO  
+Resources:
+  rLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: lambda.lambda_handler
+      Runtime: python3.7
+      Environment:
+        Variables:
+          LOG_LEVEL: !Ref pLogLevel
+      Code:
+        S3Bucket: !Ref ecstestsc1bucketname
+        S3Key: !Ref ecstestsc1artifactkey
+      Role: !ImportValue scenario1-role-FunctionRoleARN
+  rLambdaFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties: 
+      Description: v1
+      FunctionName: !Ref rLambdaFunction
+      ProvisionedConcurrencyConfig: 
+        ProvisionedConcurrentExecutions: 20    
+    DependsOn: rLambdaFunction        
+  rLambdaFunctionAlias:
+    Type: AWS::Lambda::Alias
+    Properties: 
+      Description: "rLambdaFunction Alias"
+      FunctionName: !Ref rLambdaFunction
+      FunctionVersion: !GetAtt rLambdaFunctionVersion.Version
+      Name: ScenarioOne-LambdaFunctionAlias 
+    DependsOn: rLambdaFunctionVersion    
+  rLambdaFunctionAliasErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Lambda Function Error > 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Resource
+          Value: !Sub ${rLambdaFunction}:${pFunctionAliasName}
+        - Name: FunctionName
+          Value: !Ref rLambdaFunction
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 300
+      Statistic: Sum
+      Threshold: 0  
+    DependsOn: rLambdaFunctionAlias  
+  rLambdaFunctionVersionErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Lambda Function Error > 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Resource
+          Value: !Ref rLambdaFunctionVersion
+        - Name: FunctionName
+          Value: !Ref rLambdaFunction
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 300
+      Statistic: Sum
+      Threshold: 0   
+    DependsOn: rLambdaFunctionVersion            
+Outputs:
+  rScenario1FunctionARN:
+    Description: "rScenario1Function ARN"
+    Value: !GetAtt rLambdaFunction.Arn   
+    Export:
+      Name: !Sub "${AWS::StackName}-ARN"    
+  rScenario1FunctionName:
+    Description: "Generated aws function name"
+    Value: !Ref rLambdaFunction
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionName"    
