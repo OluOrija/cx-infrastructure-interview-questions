@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ECS Infrastructure Interview
+Parameters:
+Resources:
+  rScenario2LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      RoleName: rScenario2LambdaFunctionRole
+      Path: /
+      Policies:
+        - PolicyName: allow-ec2
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Action:
+                - ec2:*
+              Effect: Allow
+              Resource: '*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonGlacierFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+Outputs:
+  rScenario2LambdaFunctionRoleARN:
+    Description: "rScenario2LambdaFunctionRoleARN ARN"
+    Value: !GetAtt rScenario2LambdaFunctionRole.Arn    
+    Export: 
+      Name: !Sub "${AWS::StackName}-FunctionRoleARN"     

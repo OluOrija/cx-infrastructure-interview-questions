@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Scenario 2 bucket'
+Resources:
+  ScenarioTwoBucket:
+    Type: AWS::S3::Bucket
+Outputs:
+  rScenario2S3BucketARN:
+    Description: "Bucket ARN for scenario-2"
+    Value: !GetAtt ScenarioTwoBucket.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-S3BucketARN"  
+  rScenario2S3BucketName:
+    Description: "Bucket NAME for scenario-2"
+    Value: !Ref ScenarioTwoBucket
+    Export:
+      Name: !Sub "${AWS::StackName}-S3BucketNAME"         
