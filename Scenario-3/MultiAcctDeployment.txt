@@ -1,4 +1,28 @@
-Given an example like say we have diffenrent aws accounts representing diffenrent environments i.e
+Considerations:
+Infrastructure as code
+How do we automate the provisioning of Networking, Compute and Storage resources?
+Terraform/CloudFormation iac?
+
+Platform
+How do we provision the whole ci/cd process as a platform to the developer, so he/she can continue to commit, build and run tests in a repeatable manner.
+And not just the developer but the QAs and Project Managers to facilitate automated approvals and workflows.
+Pipelines as code?
+
+Application
+- What are the minimum requirments for our application to run?
+- Serverless or Hosting solution required
+- Application security and data storage management.
+- ..etc
+
+Challenges with multiple environments deployments:
+- Inconsistent deployment tooling
+- Environment drift
+- Managing access control
+- Networking complexity
+- Integrating your existing tooling
+
+Example Architecture:
+Given an example like say we have different aws accounts representing diffenrent environments i.e
 AcctA - Integration, AcctB - UAT, AcctC - Production
 In keeping with aws best practices of the five pillars, High Availability and Security spring to mind when thinking about deployments.
 At the least we want our deployments secure and without disrupting operations.
@@ -22,6 +46,3 @@ Within the user data is where the magic of deployment happens.
     The artefact is retrived from S3
     Uzipped into correct file system path
     Finish application configuration via user data script.
-
-
-
