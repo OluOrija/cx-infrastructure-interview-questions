@@ -1,0 +1,27 @@
+Given an example like say we have diffenrent aws accounts representing diffenrent environments i.e
+AcctA - Integration, AcctB - UAT, AcctC - Production
+In keeping with aws best practices of the five pillars, High Availability and Security spring to mind when thinking about deployments.
+At the least we want our deployments secure and without disrupting operations.
+
+There are various deployment methods used in the industry today:
+Blue/Green
+Canary
+...etc
+The common requirment for all deployments is the artefact to be deployed.
+As illiustrated in the diagram, S3 becomes important in how we handle/deliver the artefact.
+Along with S3 is a need for immutable infrastructure as code.
+
+Scenario - Using autoscaling group
+In this scenario each deployable service in the application runs off an autoscaling group
+ASG's are essentially definitions for groups of ec2 instances performing thesame functions 
+and backed by launch configs that specify how these ec2 instances should launch.
+These ec2 instances then launch from a prepared AMI that delivers an instance ready to perform the role/function within that application stack.
+Coupled with the AMI is the ability for ec2 instances to run a userdata script.
+Userdata Script is ran just after the machine is instantiated.
+Within the user data is where the magic of deployment happens.
+    The artefact is retrived from S3
+    Uzipped into correct file system path
+    Finish application configuration via user data script.
+
+
+
